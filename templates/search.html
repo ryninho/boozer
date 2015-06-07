@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+{% block body %}
+  {% if session.logged_in %}
+    <form action="{{ url_for('run_search') }}" method=post class=run-search>
+      <dl>
+        <dt>Query name:
+        <dd><input type=text size=30 name=query>
+        <dt>From table:
+        <dd><input type=text size=30 name=source>
+        <!-- <dd><textarea name=sequel rows=5 cols=40></textarea> -->
+        <dd><input type=submit value=Search>
+      </dl>
+    </form>
+  {% endif %}
+{% endblock %}
