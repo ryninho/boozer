@@ -2,16 +2,24 @@ import psycopg2
 from flask import Flask, request, session, g, redirect, url_for, \
      abort, render_template, flash
 from contextlib import closing
+import os
+import urlparse
 
 def connect_db():
 	return psycopg2.connect(app.config['DATABASE'])
 
 # configuration
-DATABASE = 'host=127.0.0.1 user=Eric dbname=instacart_dev'
+env = os.environ['READ_ONLY_DATABASE_URL']
+db_parsed = urlparse.urlparse(env)
+database=db_parsed.path[1:]
+user=db_parsed.username
+password = db_parsed.password
+host = db_parsed.hostname
+port=db_parsed.port
+DATABASE = 'host=%s port=%s user=%s dbname=%s password=%s' % (host, port, user, database, password)
 DEBUG = True
-SECRET_KEY = 'yomomma'
-USERNAME = 'admin'
-PASSWORD = 'default'
+USERNAME = user
+PASSWORD = password
 
 # create the application
 app = Flask(__name__)
