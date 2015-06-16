@@ -4,22 +4,44 @@ from flask import Flask, request, session, g, redirect, url_for, \
 from contextlib import closing
 import os
 import urlparse
+import argparse
+
+print "Note: Please pass either 'local' or 'replica' when starting boozer from the command line to select the db connection"
+parser = argparse.ArgumentParser(description='Select the database connection.')
+parser.add_argument('db_target')
+args = parser.parse_args()
+
 
 def connect_db():
-	return psycopg2.connect(app.config['DATABASE'])
+    return psycopg2.connect(app.config['DATABASE'])
 
 # configuration
-env = os.environ['READ_ONLY_DATABASE_URL']
-db_parsed = urlparse.urlparse(env)
-database=db_parsed.path[1:]
-user=db_parsed.username
-password = db_parsed.password
-host = db_parsed.hostname
-port=db_parsed.port
-DATABASE = 'host=%s port=%s user=%s dbname=%s password=%s' % (host, port, user, database, password)
-DEBUG = True
-USERNAME = user
-PASSWORD = password
+if args.db_target == 'replica':
+    env = os.environ['READ_ONLY_DATABASE_URL']
+    db_parsed = urlparse.urlparse(env)
+    database=db_parsed.path[1:]
+    user=db_parsed.username
+    password = db_parsed.password
+    host = db_parsed.hostname
+    port=db_parsed.port
+    DATABASE = 'host=%s port=%s user=%s dbname=%s password=%s' % (host, port, user, database, password)
+    DEBUG = True
+    USERNAME = user
+    PASSWORD = password
+elif args.db_target == 'local':
+    env = os.environ['LOCAL_DATABASE_URL']
+    db_parsed = urlparse.urlparse(env)
+    database=db_parsed.path[1:]
+    user=db_parsed.username
+    password = db_parsed.password
+    host = db_parsed.hostname
+    port=db_parsed.port
+    DATABASE = 'host=%s port=%s user=%s dbname=%s password=%s' % (host, port, user, database, password)
+    DEBUG = True
+    USERNAME = user
+    PASSWORD = password
+else:
+    print "please pass either 'local' or 'replica' after the command to select a database connection" # TODO raise exception
 
 # create the application
 app = Flask(__name__)
