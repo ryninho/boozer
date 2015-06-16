@@ -40,7 +40,7 @@ DATABASE = 'host=%s port=%s user=%s dbname=%s password=%s' % (host, port, user, 
 DEBUG = True
 USERNAME = user
 PASSWORD = password
-SECRET_KEY = os.environ['BOOZER_SECRET_KEY'] # only running the flask server locally
+# SECRET_KEY = os.environ['BOOZER_SECRET_KEY'] # only running the flask server locally
 
 
 # create the application
