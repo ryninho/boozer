@@ -7,10 +7,16 @@ import urlparse
 import argparse
 
 print "Note: Please pass either 'local' or 'replica' when starting boozer from the command line to select the db connection"
+# print "Also, please pass your blazer or admin username (without the @domain.com)"
+# print "For example, python boozer.py replica eric"
+print "Also, please pass your blazer id"
+print "For example, python boozer.py replica 22178394"
+print "Lastly you'll need the following environment variables set: READ_ONLY_DATABASE_URL, LOCAL_DATABASE_URL, BOOZER_SECRET_KEY"
 parser = argparse.ArgumentParser(description='Select the database connection.')
 parser.add_argument('db_target')
+# parser.add_argument('blazer_user')
+parser.add_argument('blazer_id')
 args = parser.parse_args()
-
 
 def connect_db():
     return psycopg2.connect(app.config['DATABASE'])
@@ -18,39 +24,49 @@ def connect_db():
 # configuration
 if args.db_target == 'replica':
     env = os.environ['READ_ONLY_DATABASE_URL']
-    db_parsed = urlparse.urlparse(env)
-    database=db_parsed.path[1:]
-    user=db_parsed.username
-    password = db_parsed.password
-    host = db_parsed.hostname
-    port=db_parsed.port
-    DATABASE = 'host=%s port=%s user=%s dbname=%s password=%s' % (host, port, user, database, password)
-    DEBUG = True
-    USERNAME = user
-    PASSWORD = password
 elif args.db_target == 'local':
     env = os.environ['LOCAL_DATABASE_URL']
-    db_parsed = urlparse.urlparse(env)
-    database=db_parsed.path[1:]
-    user=db_parsed.username
-    password = db_parsed.password
-    host = db_parsed.hostname
-    port=db_parsed.port
-    DATABASE = 'host=%s port=%s user=%s dbname=%s password=%s' % (host, port, user, database, password)
-    DEBUG = True
-    USERNAME = user
-    PASSWORD = password
 else:
+    env = "postgres://localhost:5432/instacart_dev"
     print "please pass either 'local' or 'replica' after the command to select a database connection" # TODO raise exception
+
+db_parsed = urlparse.urlparse(env)
+database=db_parsed.path[1:]
+user=db_parsed.username
+password = db_parsed.password
+host = db_parsed.hostname
+port=db_parsed.port
+DATABASE = 'host=%s port=%s user=%s dbname=%s password=%s' % (host, port, user, database, password)
+DEBUG = True
+USERNAME = user
+PASSWORD = password
+SECRET_KEY = os.environ['BOOZER_SECRET_KEY'] # only running the flask server locally
+
 
 # create the application
 app = Flask(__name__)
 app.config.from_object(__name__)
 
+# @app.before_first_request
+# def before_first_request(blazer_user=args.blazer_user):
+#     pass # TODO: lookup user id with user name and send it back to the module somehow
+#     # g.db = connect_db()
+#     # cur = g.db.cursor()
+#     # cur.execute("""
+#     #     select id from users
+#     #         where email = '%s@instacart.com'
+#     #     order by created_at desc
+#     #     limit 1
+#     # """ % blazer_user)
+#     # print cur.fetchone()
+#     # blazer_id = cur.fetchone()
+#     # print blazer_id
+#     # b.blazer_id = blazer_id # stores the global.  but for one request only?? how to save to the session?
 
 @app.before_request
-def before_request():
+def before_request(blazer_id=int(args.blazer_id)):
     g.db = connect_db()
+    g.blazer_id = blazer_id
 
 @app.teardown_request
 def teardown_request(exception):
@@ -67,10 +83,10 @@ def show_mine():
     cur = g.db.cursor()
     cur.execute("""
         select id, name from blazer_queries
-            where creator_id = 22178394
+            where creator_id = %d
         order by created_at desc
         limit 10
-        """)
+        """ % g.blazer_id)
     queries = [dict(id=row[0], title=row[1]) for row in cur.fetchall()]
     return render_template('show_queries.html', queries=queries, subheader='Queries you created recently')
 
@@ -82,14 +98,14 @@ def show_recent():
         select query_id, q.name
         from (select query_id, max(created_at) as last_run
         from blazer_audits
-          where user_id = 22178394
+          where user_id = %d
           and query_id is not null
         GROUP BY 1
         ORDER BY 2 desc
         limit 10) as last_ten
         LEFT JOIN blazer_queries q on q.id = last_ten.query_id
         where q.name is not null -- only return if it hasn't been deleted
-        """)
+        """ % g.blazer_id)
     queries = [dict(id=row[0], title=row[1]) for row in cur.fetchall()]
     return render_template('show_queries.html', queries=queries, subheader='Queries you ran recently')
 
@@ -104,10 +120,10 @@ def run_search():
         cur = g.db.cursor()
         cur.execute("""
             select id, name from blazer_queries
-                where creator_id = 22178394
+                where creator_id = %d
             order by created_at desc
             limit 5
-            """)
+            """ % g.blazer_id)
         queries = [dict(id=row[0], title=row[1]) for row in cur.fetchall()] # this is a list of dictionaries
 
     return render_template('show_queries.html', queries=queries, user_requested_search=True, subheader='Search results')
