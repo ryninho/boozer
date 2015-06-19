@@ -1,4 +1,4 @@
 *.ipynb
 *.csv
-*.xls
+*.xls*
 .DS_Store
