@@ -138,9 +138,21 @@ def run_search():
 
     return render_template('show_queries.html', queries=queries, user_requested_search=True, subheader='Search results')
 
+@app.route('/popular', methods=['GET', 'POST'])
+def popular():
+    return render_template('under_construction.html')
+
 @app.route('/test', methods=['GET', 'POST'])
 def test():
-    return render_template('test.html')
+    cur = g.db.cursor()
+    cur.execute("""
+        select id, name from blazer_queries
+            where creator_id = %d
+        order by created_at desc
+        limit 10
+        """ % g.blazer_id)
+    queries = [dict(id=row[0], title=row[1]) for row in cur.fetchall()]
+    return render_template('test.html', queries=queries, subheader='Queries you created recently')
 
 # @app.route('/login', methods=['GET', 'POST'])
 # def login():
