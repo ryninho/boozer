@@ -146,13 +146,12 @@ def popular():
 def test():
     cur = g.db.cursor()
     cur.execute("""
-        select id, name from blazer_queries
-            where creator_id = %d
-        order by created_at desc
-        limit 10
-        """ % g.blazer_id)
-    queries = [dict(id=row[0], title=row[1]) for row in cur.fetchall()]
-    return render_template('test.html', queries=queries, subheader='Queries you created recently')
+        SELECT table_name FROM information_schema.tables
+        WHERE table_schema = 'public'
+        ORDER BY table_name
+        """)
+    tables = [dict(name=row[0]) for row in cur.fetchall()]
+    return render_template('test.html', tables=tables, subheader='Tables')
 
 # @app.route('/login', methods=['GET', 'POST'])
 # def login():

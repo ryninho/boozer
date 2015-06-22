@@ -1,1 +1,15 @@
-test
+{% extends "layout.html" %}
+{% block body %}
+
+  {% if subheader %}
+  <h2>{{ subheader }}</h2>
+  <br>
+  {% endif %}
+  <ul class=queries>
+  {% for table in tables %}
+    <li><h2>{{ table.name }}</a></h2>
+  {% else %}
+    <li><em>No queries found</em>
+  {% endfor %}
+  </ul>
+{% endblock %}
