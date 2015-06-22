@@ -40,7 +40,7 @@ DATABASE = 'host=%s port=%s user=%s dbname=%s password=%s' % (host, port, user, 
 DEBUG = True
 USERNAME = user
 PASSWORD = password
-# SECRET_KEY = os.environ['BOOZER_SECRET_KEY'] # only running the flask server locally
+SECRET_KEY = os.environ['BOOZER_SECRET_KEY'] # only running the flask server locally
 
 
 # create the application
@@ -116,14 +116,24 @@ def run_search():
     #     abort(401)
     queries = []
     if request.form:
-        flash('you searched for ' + request.form['query'] + ' and ' + request.form['source'])
+        qry_name = request.form['query-name']
+        qry_from = request.form['query-from']
+        flash('you searched for ' + qry_name + ' and ' + qry_from)
         cur = g.db.cursor()
         cur.execute("""
-            select id, name from blazer_queries
-                where creator_id = %d
-            order by created_at desc
-            limit 5
-            """ % g.blazer_id)
+            SELECT q.id
+              , q.name
+              , q.creator_id
+              , u.first_name || ' ' || u.last_name as creator_name
+              , q.created_at
+              , q.updated_at
+              , regexp_replace(q.statement, '(extract[\s\n\t]*\([\s\n\t]*\w+[\s\n\t]+from)', 'i','g') as without_extract_from
+              , substring(regexp_replace(lower(q.statement), '(extract[\s\n\t]*\([\s\n\t]*\w+[\s\n\t]+from)', 'i','g') from '(?i)from[\s\n\t]+"?(\w+)') as from_table
+            FROM blazer_queries q
+              INNER JOIN users u on u.id = q.creator_id
+            where substring(regexp_replace(lower(q.statement), '(extract[\s\n\t]*\([\s\n\t]*\w+[\s\n\t]+from)', 'i','g') from '(?i)from[\s\n\t]+"?(\w+)') = '%s'
+            order by q.updated_at desc
+            limit 100""" % qry_from)
         queries = [dict(id=row[0], title=row[1]) for row in cur.fetchall()] # this is a list of dictionaries
 
     return render_template('show_queries.html', queries=queries, user_requested_search=True, subheader='Search results')
