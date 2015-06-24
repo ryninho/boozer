@@ -1,15 +1,33 @@
 {% extends "layout.html" %}
 {% block body %}
-
   {% if subheader %}
   <h2>{{ subheader }}</h2>
   <br>
   {% endif %}
+
+  <select>
+  {% for table in tables %}
+      <option value="{{ table.name }}">{{ table.name }}</option>
+  {% endfor %}
+  </select>
+  <select>
+  {% for table in tables %}
+      <option value="{{ table.name }}">{{ table.name }}</option>
+  {% endfor %}
+  </select>
+  <select>
+  {% for table in tables %}
+      <option value="{{ table.name }}">{{ table.name }}</option>
+  {% endfor %}
+  </select>
+
+  <br>
+
   <ul class=queries>
   {% for table in tables %}
     <li><h2>{{ table.name }}</a></h2>
   {% else %}
-    <li><em>No queries found</em>
+    <li><em>No tables found</em>
   {% endfor %}
   </ul>
 {% endblock %}
