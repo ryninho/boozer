@@ -10,11 +10,13 @@
       <option value="{{ table.name }}">{{ table.name }}</option>
   {% endfor %}
   </select>
+
   <select>
   {% for table in tables %}
       <option value="{{ table.name }}">{{ table.name }}</option>
   {% endfor %}
   </select>
+
   <select>
   {% for table in tables %}
       <option value="{{ table.name }}">{{ table.name }}</option>
@@ -23,11 +25,13 @@
 
   <br>
 
-  <ul class=queries>
+  <input type=submit value=Search>
+
+<!--   <ul class=queries>
   {% for table in tables %}
     <li><h2>{{ table.name }}</a></h2>
   {% else %}
     <li><em>No tables found</em>
   {% endfor %}
-  </ul>
+  </ul> -->
 {% endblock %}

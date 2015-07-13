@@ -2,6 +2,7 @@ import psycopg2
 from flask import Flask, request, session, g, redirect, url_for, \
      abort, render_template, flash
 from contextlib import closing
+from flask.ext.cache import Cache
 import os
 import urlparse
 import argparse
