@@ -1,18 +1,17 @@
 {% extends "layout.html" %}
 {% block body %}
-  {% if user_requested_search %}
-    <form action="{{ url_for('run_search') }}" method=post class=run-search>
-      <dl>
-        <dt>Query name:
-        <dd><input type=text size=30 name=query-name>
-        <dt>From table:
-        <dd><input type=text size=30 name=query-from>
-        <!-- <dd><textarea name=sequel rows=5 cols=40></textarea> -->
-        <dd><input type=submit value=Search>
-      </dl>
-    </form>
-  {% endif %}
+
+  <form action="{{ url_for('run_search') }}" method=get class=run-search>
+    <select name=query-table>
+    {% for table in tables %}
+        <option value="{{ table.name }}">{{ table.name }}</option>
+    {% endfor %}
+    </select>
+    <br>
+    <input type=submit value=Search>
+  </form>
   {% if subheader %}
+  <br>
   <h2>{{ subheader }}</h2>
   <br>
   {% endif %}

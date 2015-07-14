@@ -2,9 +2,11 @@
 Advanced search for blazer.  Work in progress.
 
 next steps:
-* search by table name
-* show recent queries on search page
-* add links to each page
+* don't show dropdown on show_queries page
+* search by both "from" and "join"
+* post is good for writing something, better to use query params
+* show recent queries on search page as default
+* add navigation links to each page
 * make it prettier with bootstrap
 
 faq:

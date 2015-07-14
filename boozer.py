@@ -113,14 +113,18 @@ def show_recent():
 
 @app.route('/search', methods=['GET', 'POST'])
 def run_search():
-    # if not session.get('logged_in'):
-    #     abort(401)
+    cur = g.db.cursor()
+    cur.execute("""
+        SELECT table_name FROM information_schema.tables
+        WHERE table_schema = 'public'
+        ORDER BY table_name
+        """)
+    tables = [dict(name=row[0]) for row in cur.fetchall()]
+
     queries = []
-    if request.form:
-        qry_name = request.form['query-name']
-        qry_from = request.form['query-from']
-        flash('you searched for ' + qry_name + ' and ' + qry_from)
-        cur = g.db.cursor()
+    if request.args:
+        qry_table = request.args.get('query-table')
+        flash('you searched for ' + qry_table)
         cur.execute("""
             SELECT q.id
               , q.name
@@ -134,10 +138,10 @@ def run_search():
               INNER JOIN users u on u.id = q.creator_id
             where substring(regexp_replace(lower(q.statement), '(extract[\s\n\t]*\([\s\n\t]*\w+[\s\n\t]+from)', 'i','g') from '(?i)from[\s\n\t]+"?(\w+)') = '%s'
             order by q.updated_at desc
-            limit 100""" % qry_from)
+            limit 100""" % qry_table)
         queries = [dict(id=row[0], title=row[1]) for row in cur.fetchall()] # this is a list of dictionaries
 
-    return render_template('show_queries.html', queries=queries, user_requested_search=True, subheader='Search results')
+    return render_template('show_queries.html', queries=queries, tables=tables, user_requested_search=True, subheader='Search results')
 
 @app.route('/popular', methods=['GET', 'POST'])
 def popular():
