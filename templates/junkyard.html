@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+{% block body %}
+  {% if subheader %}
+  <h2>{{ subheader }}</h2>
+  <br>
+  {% endif %}
+
+
+
+<!--   <ul class=queries>
+  {% for table in tables %}
+    <li><h2>{{ table.name }}</a></h2>
+  {% else %}
+    <li><em>No tables found</em>
+  {% endfor %}
+  </ul> -->
+
+
+  {% if user_requested_search %}
+    <form action="{{ url_for('run_search') }}" method=post class=run-search>
+      <dl>
+        <dt>Query name:
+        <dd><input type=text size=30 name=query-name>
+        <dt>From table:
+        <dd><input type=text size=30 name=query-from>
+        <!-- <dd><textarea name=sequel rows=5 cols=40></textarea> -->
+        <dd><input type=submit value=Search>
+      </dl>
+    </form>
+  {% endif %}
