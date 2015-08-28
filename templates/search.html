@@ -1,13 +1,11 @@
 {% extends "layout.html" %}
+
 {% block body %}
   {% if subheader %}
   <h2>{{ subheader }}</h2>
   <br>
   {% endif %}
   <form action="{{ url_for('run_search') }}" method=get class=run-search>
-
-  <!-- Fixed navbar -->
-  <link rel=stylesheet type=text/css href="{{ url_for('static', filename='bootstrap.css') }}">
 
   <nav class="navbar navbar-default navbar-fixed-top">
     <div class="container">
@@ -39,8 +37,6 @@
     </select>
 
     <br>
-
-    <input type=submit value=Search>
   </form>
 
 {% endblock %}
