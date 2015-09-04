@@ -2,6 +2,7 @@
 Advanced search for blazer.  Work in progress.
 
 next steps:
+* get blazer id from user's instacart email address
 * don't show dropdown on show_queries page
 * search by both "from" and "join"
 * post is good for writing something, better to use query params
