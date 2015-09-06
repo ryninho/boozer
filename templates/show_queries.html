@@ -1,6 +1,7 @@
 {% extends "layout.html" %}
 {% block body %}
 
+  {% if search %}
   <form action="{{ url_for('run_search') }}" method=get class=run-search>
     <select name=query-table>
     {% for table in tables %}
@@ -10,6 +11,8 @@
     <br>
     <input type=submit value=Search class="btn btn-info">
   </form>
+  {% endif %}
+
   {% if subheader %}
   <br>
   <h2>{{ subheader }}</h2>

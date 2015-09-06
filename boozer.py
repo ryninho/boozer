@@ -89,7 +89,7 @@ def show_mine():
         limit 10
         """ % g.blazer_id)
     queries = [dict(id=row[0], title=row[1]) for row in cur.fetchall()]
-    return render_template('show_queries.html', queries=queries, subheader='Queries you created recently')
+    return render_template('show_queries.html', queries=queries, subheader='Queries you created recently', search=False)
 
 # TODO: either change or have a similar one that passes the same actual query (as a new one or what??)
 @app.route('/recent', methods=['GET'])
@@ -108,7 +108,7 @@ def show_recent():
         where q.name is not null -- only return if it hasn't been deleted
         """ % g.blazer_id)
     queries = [dict(id=row[0], title=row[1]) for row in cur.fetchall()]
-    return render_template('show_queries.html', queries=queries, subheader='Queries you ran recently')
+    return render_template('show_queries.html', queries=queries, subheader='Queries you ran recently', search=False)
 
 
 @app.route('/search', methods=['GET', 'POST'])
@@ -141,7 +141,7 @@ def run_search():
             limit 100""" % qry_table)
         queries = [dict(id=row[0], title=row[1]) for row in cur.fetchall()] # this is a list of dictionaries
 
-    return render_template('show_queries.html', queries=queries, tables=tables, user_requested_search=True, subheader='Search results')
+    return render_template('show_queries.html', queries=queries, tables=tables, user_requested_search=True, subheader='Search results', search=True)
 
 @app.route('/popular', methods=['GET', 'POST'])
 def popular():

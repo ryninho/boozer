@@ -6,7 +6,7 @@ from flask.ext.cache import Cache
 import os
 import urlparse
 import argparse
-from flask_bootstrap import Bootstrap
+# from flask_bootstrap import Bootstrap
 from flask_nav import Nav
 from flask_nav.elements import Navbar, View
 
